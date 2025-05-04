@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Legal Doc Assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="top-bar">
+        <div class="top-left"></div>
+        <div id="title">Legal Document Assistant</div>
+        <div class="top-right">
+          <button id="back-button" onclick="goHome()">Back to Home</button>
+          <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+    </div>
+    <div id="layout">
+      <div id="tracker" style="display: none;"></div>
+      <div id="main-content">
+        <div id="chat-ui">
+          <div id="chatbox"></div>
+          <div id="loading" style="display: none; text-align: center; color: #888; padding: 0.5em;">
+            Thinking...
+          </div>
+          <div id="input">
+            <input type="text" id="message" placeholder="Type your message..." autofocus />
+            <button onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/script.js"></script>
+  </body>
+</html>

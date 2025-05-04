@@ -1,0 +1,848 @@
+A. Definitions and Interpretation
+
+The definitions and rules of interpretation in this clause apply in this agreement:
+
+Common Parts: Common Parts means any part of a building containing the Property and any land or premises which the Tenant is entitled under the terms of this Tenancy to use in common with the owners or occupiers of other dwellings (see clause B3.2).
+
+Landlord: A reference in this agreement to the Landlord includes a reference to the person who is entitled to the immediate reversion to the Tenancy and anyone who becomes entitled, by law, to receive the rent payable under this Tenancy.
+
+Property: A reference to the Property is to the property (or any part of the property) described in clause B3.1.
+
+Tenancy: A reference in this agreement to the Tenancy is to the tenancy created by this agreement.
+
+Tenant: A reference to the Tenant includes a reference to anyone who succeeds to or inherits this tenancy on the death of the Tenant.
+
+A reference to one gender shall include a reference to the other gender.
+
+A reference to a statute (e.g. an Act of Parliament such as the Landlord and Tenant Act 1985) or statutory provision (e.g. a section of an Act – for example section 11 of the 1985 Act) is a reference to it as it is in force for the time-being, taking account of any amendment, extension or re-enactment of the law concerned.
+
+References to clauses are to clauses of this agreement.
+
+{% if custom_clauses %}
+    {% set base = 1 %}
+    {% for clause in custom_clauses if clause.tag == 'interpretation' %}
+A.{{ base + loop.index0 }} {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+
+
+Section B: Main terms of the agreement
+
+
+B1. The Parties
+
+    This is an agreement for a fixed term assured shorthold tenancy:
+
+    Between: {{ landlord_name }} (“the Landlord”)
+
+    and the following tenant(s):
+    {% for tenant in tenant_info %}
+    Tenant {{ loop.index }}: {{ tenant.name }}
+    {% endfor %}
+    {% if tenant_count > tenant_info | length %}
+        {% for i in range(tenant_info | length + 1, tenant_count + 1) %}
+    Tenant {{ i }}: [Tenant name missing]
+        {% endfor %}
+    {% endif %}
+
+    {% if tenant_count | int > 1 %}
+    The obligations and liabilities of the parties under this agreement are joint and several.
+    {% endif %}
+
+
+
+
+
+
+{% if additional_occupants_check == 'yes' %}
+B2. Other Occupiers
+
+    B2.1 The Landlord agrees that, in addition to the Tenant, the following person(s) (who for the avoidance of doubt are not tenant(s)) may live at the Property:
+
+        (a) the Tenant’s children or other dependants who are under 18 years of age at the start of the Tenancy;
+
+        (b) the following adults (if any):
+        {% for name in additional_occupants %}
+        Adult {{ loop.index }}: {{ name }}
+        {% else %}
+        None
+        {% endfor %}
+
+    Referred to in this agreement as “Members of the Tenant’s Household”.
+
+    B2.2 The Tenant must not allow any other adults to live at the property without the written consent of the Landlord, which must not be unreasonably withheld or delayed.
+
+    B2.3 The Tenant must ensure that not more than {{ tenant_count + additional_occupants_count }} persons live at the Property.
+
+    B2.4 Any obligation on the Tenant under this agreement to do or not to do anything shall also require the Tenant not to permit or allow any Member of the Tenant’s Household or visitor to do or not to do the same thing.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'additional_occupants' %}
+    B2.{{ 4 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+
+
+
+
+
+
+B3. The Property and Common Parts
+
+    B3.1 Address of the Property: {{ property_address }}
+    B3.2 Description of the Property: {{property_description}}
+
+    B3.3 Furnishing status:
+    {% if furnished == 'yes' %}
+    Furnished
+    {% elif furnished == 'partial' %}
+    Part furnished
+    {% else %}
+    Unfurnished
+    {% endif %}
+
+
+    B3.4 The Property includes:
+    {% for item in property_includes %}
+    - {{ item }}
+    {% else %}
+    - [No property-specific features described]
+    {% endfor %}
+
+    {% if shared_areas == 'yes' %}
+    B3.5 Common Parts:
+    In addition to the Property, the Tenant shall also have use of the following Common Parts :
+
+    {% for shared_area in shared_areas_description %}
+    - {{ shared_area }}
+    {% else %}
+    - [No shared areas described]
+    {% endfor %}
+    {% endif %}
+
+    B3.6 The Landlord must provide the Tenant with such information about the Property, the Property’s installations and any services provided to the Property as is reasonably necessary to enable the Tenant to comply with the obligations contained in clauses C2 and C4 of this agreement.
+
+    {% if mortgage_check == 'no' %}
+    B3.7 The Property is not currently subject to a mortgage.
+    {% else %}
+    B3.7 The Property is currently subject to a mortgage.
+    {% endif %}
+
+
+
+
+
+
+B4. The Term and Expiry of the Fixed Term
+
+    B4.1 The Tenancy created by this agreement:
+
+    (a) begins on: {{ start_date }}
+
+    (b) ends on: {{ end_date }}
+
+    B4.2 Unless terminated earlier in accordance with the grounds in Section E (Landlord’s reasons for possession during the fixed term){% if has_break_clause == 'yes' %}, or, where applicable, Section F (break clause){% endif %}, or by mutual agreement between the parties.
+
+    B4.3 If the Tenant continues to live in the Property after the expiry of the fixed term and no further tenancy has been entered into by the parties, then from the expiry of the fixed term the Tenant shall occupy the Property under a statutory periodic tenancy in accordance with section 5(2) of the Housing Act 1988.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'term_and_expiry' %}
+    B4.{{ 3 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+
+
+B5. Termination by the Landlord at the End of the Fixed Term
+
+    B5.1 If the Landlord wants the Tenant to leave the Property at the end of the Tenancy, the Landlord must:
+
+        (a) give the Tenant the correct amount of notice in writing before the end of the fixed term in accordance with section 21 of the Housing Act 1988 (this is known as a “section 21 notice”); or
+
+        (b) seek possession on one or more of the grounds contained in Schedule 2 to the Housing Act 1988 (if any of those grounds apply).
+
+    B5.2 If ground 1 of Schedule 2 to the Housing Act 1988 applies in relation to the Property, the Landlord should complete the notice in Annex 2 of this agreement and give it to the tenant(s) prior to the date on which this agreement is entered into.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'termination_end_of_term' %}
+    B5.{{ 2 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+
+
+
+
+B6. The Rent
+
+    {% if rent_review_type == "fixed" %}
+    B6.1 The rent is £{{ weekly_rent }} per week, which is £{{ monthly_rent }} per month for the fixed term.
+
+    {% elif rent_review_type == "fixed_percentage" %}
+    B6.1 The rent is £{{ weekly_rent }} per week, which is £{{ monthly_rent }} per month for the first year of the fixed term.
+
+    B6.2 Subject to compliance with the requirements specified in clause B6.3, the Landlord may increase the rent on each review date by a maximum of {{ fixed_percentage_increase }}%.
+
+    B6.3 The requirements are that the Landlord must serve a rent review notice on the Tenant not less than 28 days but not more than 90 days before the relevant review date specifying:
+
+        (a) the percentage by which the rent will increase on the relevant review date; and  
+        (b) the new rent payable from the relevant review date.
+
+    B6.4 If the Landlord fails to comply with the requirements specified in clause B6.3, the rent will not change until the next review date.
+
+    B6.5 In clause B6.3, “review date” means the first anniversary of the start of the Tenancy ({{ start_date }}) and each anniversary thereafter.
+
+    {% elif rent_review_type == "fixed_increase" %}
+    B6.1 The rent is £{{ weekly_rent }} per week, which is £{{ monthly_rent }} per month for the first year of the fixed term.
+
+    B6.2 Subject to compliance with the requirements specified in clause B6.3, the Landlord may increase the rent on each review date by a maximum of £{{ fixed_value_increase }}.
+
+    B6.3 The requirements are that the Landlord must serve a rent review notice on the Tenant not less than 28 days but not more than 90 days before the relevant review date specifying:
+
+        (a) the percentage by which the rent will increase on the relevant review date; and  
+        (b) the new rent payable from the relevant review date.
+
+    B6.4 If the Landlord fails to comply with the requirements specified in clause B6.3, the rent will not change until the next review date.
+
+    B6.5 In clause B6.3, “review date” means the first anniversary of the start of the Tenancy ({{ start_date }}) and each anniversary thereafter.
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'rent_terms' %}
+    B6.{{ 5 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+    {% elif rent_review_type == "cpi_indexed" %}
+    B6.1 The rent is £{{ weekly_rent }} per week, which is £{{ monthly_rent }} per month for the first year of the fixed term.
+
+    B6.2 Subject to compliance with the requirements specified in clause B6.4, the Landlord may increase the rent on each review date by a maximum of the percentage change in the Consumer Prices Index over the preceding year.
+
+    B6.3 This must be calculated by reference to the last index published before the date on which the Landlord serves the notice under clause B6.4, and the index published 12 months prior to that.
+
+    B6.4 The requirements are that the Landlord must serve a rent review notice on the Tenant not less than 28 days but not more than 90 days before the relevant review date specifying:
+
+        (a) the percentage by which the rent will increase on the relevant review date; and  
+        (b) the new rent payable from the relevant review date.
+
+    B6.5 If the Landlord fails to comply with the requirements specified in clause B6.4, rent will continue to be payable from the relevant review date until the next review date at the rate payable immediately before the relevant review date.
+
+    B6.6 In clause B6.4, “review date” means the first anniversary of the start of the Tenancy ({{ start_date }}) and each anniversary thereafter.
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'rent_terms' %}
+    B6.{{ 6 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+    {% endif %}
+
+
+
+
+
+
+B7. Council Tax, Utilities and Other Charges for Services Included in the Rent
+
+    {% if utilities_included == 'no' %}
+    B7.1 The Tenant shall be responsible for paying all charges for services provided to the Property, including but not limited to council tax, gas, electricity, water and sewerage, broadband, telephone, and television licence, for the duration of the Tenancy.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'included_charges' %}
+    B7.{{ 1 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+    {% else %}
+    B7.1 The following charges are included in and payable as part of the rent:
+    {% for item in which_utilities_included %}
+    - {{ item }}
+    {% else %}
+    - [No items listed]
+    {% endfor %}
+
+    B7.2 The following charges are not included in the rent and are the responsibility of the Tenant:
+    {% for item in which_utilities_not_included %}
+    - {{ item }}
+    {% else %}
+    - [No items listed]
+    {% endfor %}
+    {% endif %}
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'included_charges' %}
+    B7.{{ 2 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+
+B8. Payment of the Rent by the Tenant
+
+    B8.1 Rent Payment Dates
+
+        The first payment is to be made on {{ first_payment_due_date }} and further payments are to be made on {{ payment_day }} beginning on {{ first_payment_due_date }}.
+
+    B8.2 Interest Payable on Overdue Rent
+
+        Interest of 3% above the Bank of England’s base rate will be payable on any rent which is more than 14 days overdue. The interest will be payable from the date on which the rent fell due until the date it is paid.
+
+    B8.3 Method of Payment
+
+        The rent must be paid by {{ payment_method }}.
+
+
+
+
+
+{% if furnished == "yes" %}
+B9. The Inventory and Report of Condition
+
+    B9.1 If the Landlord, or someone acting on behalf of the Landlord, has prepared an inventory and/or report of condition, it must be attached to this agreement (see Annex 1).
+
+    B9.2 Unless the Landlord receives written comments on or amendments to the inventory and/or report of condition within 14 days of the start of the Tenancy, the Tenant shall be taken as accepting the inventory and report of condition as a full and accurate record of the condition of the Property and its contents.
+
+    B9.3 The Landlord must ensure that any comments or amendments received from the Tenant under clause B9.2 are attached to the inventory and/or report of condition annexed to this agreement.
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'inventory_terms' %}
+    B9.{{ 3 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+
+
+
+
+B10. The Deposit
+
+    The Tenant has paid a deposit of £{{ deposit_amount }} which the Landlord has protected or will protect in the following Government-approved tenancy deposit protection scheme: {{ deposit_protection_scheme }} (https://www.gov.uk/deposit-protection-schemes-and-landlords).
+
+    The Tenant agrees that the Landlord may make reasonable deductions from the deposit at the end of the Tenancy for the following purposes:
+
+        (a) Except for fair wear and tear, to make good any damage to the Property, the Common Parts, or any of the items listed in the inventory caused by the Tenant’s failure to comply with the Tenant’s obligations under this agreement;
+
+        (b) To replace any items listed in the inventory which are missing from the Property at the end of the Tenancy;
+
+        (c) To pay any rent which remains unpaid at the end of the Tenancy;
+
+        (d) Where the Tenant has failed to comply with clause C8.2 of this agreement, to cover the reasonable removal, storage and disposal costs incurred by the Landlord;
+
+        (e) Where the Tenant has failed to comply with clause C8.1 of this agreement, to pay the reasonable cleaning costs incurred by the Landlord to remedy that failure;
+
+        (f) Where the Tenant has failed to comply with the obligation in clause C2.4, to recover any reconnection charge paid by the Landlord;
+
+        (g) Where the Tenant has made any addition or alteration to the Property or has redecorated the Property without the Landlord’s prior written consent (see clause C4.2), to cover the reasonable costs incurred by the Landlord in removing or reversing any such addition or alteration or in reinstating the former decorative scheme.
+
+    See the Tenant Fees Act guidance for more details.
+
+
+
+
+Section C: Tenant’s obligations
+
+
+
+C1. Payment of Rent
+
+    The Tenant must pay the rent in advance, on or before the dates agreed (see clause B8.1).
+
+
+
+
+C2. Payment of Council Tax, Utilities and Other Charges
+
+    C2.1 Except where included in the rent (see clause B7), the Tenant must pay to the relevant local authority all council tax due in respect of the Property during the Tenancy.
+
+    C2.2 Except where included in the rent (see clause B7), the Tenant must pay to the relevant suppliers all charges in respect of any electricity, gas or water (including sewerage) services used at or supplied to the Property during the Tenancy and pay all charges to the provider for the use of any telephone, satellite, cable or broadband services at the Property during the Tenancy.
+
+    C2.3 Except where included in the rent (see clause B7), the Tenant must pay any television licence fee payable in respect of the Property during the Tenancy.
+
+    C2.4 Where any service mentioned in clause C2.2 has been disconnected as a result of the Tenant’s failure to comply with the Tenant’s obligation to pay for the service, any reconnection charge will be payable by the Tenant.
+
+
+
+
+C3. Use of the Property, Pets and Prohibited Conduct
+
+    C3.1 The Tenant must occupy the Property as the Tenant’s only or principal home.
+
+    C3.2 The Tenant must not use the Property for the purposes of a business, trade or profession except with the prior written consent of the Landlord, which must not be unreasonably withheld or delayed. In particular, it will not be unreasonable for the Landlord to withhold consent if there is a reasonable likelihood that the use proposed would:
+
+        (a) give rise to a tenancy to which Part II of the Landlord and Tenant Act 1954 (business tenancies) applies; or  
+        (b) cause a nuisance to the occupiers of neighbouring properties or significantly increase wear and tear to the Property.
+
+    {% if business_use_allowed == 'yes' %}
+    C3.3 The Landlord has agreed in advance that limited business use is acceptable, subject to the Tenant complying with the conditions in clause C3.2.
+    {% endif %}
+
+    C3.4 The Tenant must not use the Property for any illegal, immoral, disorderly or anti-social purposes.
+
+    C3.5 The Tenant must not do anything to or on the Property or any Common Parts which may reasonably be considered a nuisance or annoyance to the occupiers of neighbouring properties.
+
+    C3.6 A Tenant must seek the prior written consent of the Landlord should they wish to keep pets or other animals at the Property.
+
+    {% if pets_allowed == 'yes' %}
+    C3.7 The Landlord has pre-approved the Tenant’s request to keep pets at the Property, on the basis that the Tenant is a responsible pet owner and the animals are suitable for the premises. Consent has been granted under the conditions of clause C3.6.
+    {% else %}
+    C3.7 A Landlord must not unreasonably withhold or delay a written request from a Tenant without considering the request on its own merits. The Landlord should accept such a request where they are satisfied the Tenant is a responsible pet owner and the pet is of a kind that is suitable in relation to the nature of the premises at which it will be kept. Consent is deemed to be granted unless the written request is turned down by a Landlord with good reason in writing within 28 days of receiving the request.
+
+    A Landlord is prohibited from charging a fee to a Tenant who wishes to keep pets or other animals at the Property. Permission may be given on the condition that the Tenant pays an additional reasonable amount towards the deposit, but the deposit must not breach the deposit cap requirements under the Tenant Fees Act 2019 (see clause B10).
+    {% endif %}
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'tenant_obligations_use_of_premises' %}
+    C3.{{ 7 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+C4. Care, Maintenance and Redecoration of the Property
+
+    C4.1 The Tenant must take reasonable care of the Property, any items listed in the inventory, and the Common Parts (if any). This includes (but is not limited to):
+
+        (a) taking reasonable steps to keep the Property adequately ventilated and heated so as to prevent damage from condensation;  
+        (b) taking reasonable steps to prevent frost damage occurring to any pipes or other installations in the Property, provided the pipes and other installations were adequately insulated at the start of the Tenancy; and  
+        (c) disposing of all rubbish in an appropriate manner and at the appropriate time.
+
+    C4.2
+    {% if alterations_permitted == 'yes' %}
+    The Tenant is permitted to make minor additions or alterations to the Property (such as installing shelves or painting walls), provided that:
+
+        (a) any such changes are reasonable in nature;  
+        (b) the Landlord is notified in writing in advance of the changes; and  
+        (c) the Tenant agrees to return the Property to its original condition at the end of the Tenancy, unless otherwise agreed.
+
+    Alterations of a structural nature or involving electrical/plumbing work still require the Landlord’s prior written consent.
+    {% else %}
+    The Tenant must not make any addition or alteration to the Property or redecorate the Property (or any part of it) without the Landlord’s prior written consent, which must not be unreasonably withheld or delayed.
+    {% endif %}
+    C4.3 The Tenant must notify the Landlord as soon as reasonably possible about any repairs that are needed to the Property or to any items listed on the inventory for which the Landlord is responsible (see clause D3).
+
+    C4.4 The Tenant will be liable for the reasonable cost of repairs where the need for them is attributable to the Tenant’s failure to comply with the obligations set out above in clauses C4.1 and C4.2 or where the need for repair is attributable to the fault or negligence of the Tenant, any Member of the Tenant’s Household, or any of the Tenant’s visitors.
+
+    C4.5 The Tenant shall promptly replace and pay for any broken glass in windows at the Property where the Tenant, any Member of the Tenant’s Household or any of the Tenant’s visitors cause the breakage.
+
+    C4.6 The Tenant will be liable for the reasonable cost of replacing keys to the Property, should they be lost or rendered unusable by damage.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag in ['tenant_obligations_repair', 'tenant_obligations_decoration'] %}
+    C4.{{ 6 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+
+
+
+C5. Security of the Property and Periods of Absence
+
+    C5.1 The Tenant must not leave the Property unoccupied for more than {{ tenant_absence }} consecutive days without giving notice in writing to the Landlord.
+
+    C5.2 The Tenant must take reasonable steps to ensure that the Property is secure whenever the Property is unoccupied.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'tenant_obligations_security' %}
+    C5.{{ 2 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+
+
+C6. Access to the Property by the Landlord or Agent
+
+    C6.1 Routine Access  
+        C6.1.1 Provided the Landlord has given the Tenant at least 24 hours’ prior notice in writing, the Tenant must give the Landlord (or any person acting on behalf of the Landlord) access to the Property at reasonable times of day for the following purposes:
+
+            (a) to inspect its condition and state of repair;  
+
+            (b) to carry out the Landlord’s repairing obligations and other obligations under this agreement; and  
+
+            (c) to carry out any inspections required by law including (but not limited to) gas safety inspections, fire safety inspections, and inspections of any smoke or carbon monoxide alarms installed in the Property and to carry out any works, repairs, maintenance, or installations (including the installation of any smoke or carbon monoxide alarm) required by law.
+
+    C6.2 Access for the Purposes of Selling or Re-letting the Property  
+        C6.2.1 Provided the Landlord has given the Tenant at least 24 hours’ prior notice in writing, the Tenant must give the Landlord (or any person acting on behalf of the Landlord) access to the Property at reasonable times of day in the following circumstances:
+
+            (a) where the Tenant has given notice under clause F2 (Tenant’s rolling 3 month break clause), to show prospective tenants or purchasers, letting agents, or estate agents around the Property, but only during the last 3 months of the Tenancy;
+
+            (b) where the Landlord has served a notice on the Tenant under clause F5 stating his intention to sell the Property, to show estate agents or prospective purchasers around the Property; and
+
+            (c) during the last month of the Tenancy, for any of the purposes mentioned in paragraph (a) above.
+
+    C6.3 Access During Periods of Absence of More Than {{ tenant_absence }} Days  
+    The Tenant agrees that if the Property is to be unoccupied for a period of more than {{ tenant_absence }} consecutive days, the Landlord may have access during that period for the purposes of keeping the Property insured and taking such steps as may reasonably be necessary to mitigate the risk of damage to the Property.
+
+    C6.4 Emergency Access  
+    The Tenant must give the Landlord (or persons acting on the Landlord’s behalf) immediate access to the Property in the event of an emergency on the Property.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'tenant_obligations_entry_and_inspections' %}
+    C6.{{ 4 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+C7. Assignment and Subletting
+
+    C7.1 Assignment  
+        C7.1.1 The Tenant must not assign (i.e. transfer to another person) the Tenancy, either in whole or in part, without the consent of the Landlord in writing. Such consent must not be unreasonably withheld.
+
+        {% if custom_clauses %}
+            {% for clause in custom_clauses if clause.tag == 'tenant_obligations_assignment' %}
+        C7.1.{{ 1 + loop.index }} {{ clause.text }}
+            {% endfor %}
+        {% endif %}
+
+    {% if subletting_allowed == 'yes' %}
+    C7.2 Subletting of Whole Property  
+        C7.2.1 The Tenant must not sublet the whole of the Property for the entire duration of the Tenancy.
+
+        C7.2.2 The Tenant must not sublet the whole of the Property for any period which is less than the entire duration of the Tenancy without the consent of the Landlord in writing. Such consent must not be unreasonably withheld.
+
+        {% if custom_clauses %}
+            {% for clause in custom_clauses if clause.tag == 'tenant_obligations_subletting_whole' %}
+        C7.2.{{ 2 + loop.index }} {{ clause.text }}
+            {% endfor %}
+        {% endif %}
+
+    C7.3 Subletting of Part of the Property  
+        C7.3.1 The Tenant can request to sublet part of the Property for either the whole or part of the duration of the Tenancy. The Tenant must not sublet any part of the Property without the consent of the Landlord in writing. Such consent must not be unreasonably withheld.
+
+        {% if custom_clauses %}
+            {% for clause in custom_clauses if clause.tag == 'tenant_obligations_subletting_part' %}
+        C7.3.{{ 1 + loop.index }} {{ clause.text }}
+            {% endfor %}
+        {% endif %}
+
+    {% else %}
+    C7.2 Subletting  
+        C7.2.1 The Tenant must not sublet the whole or any part of the Property under any circumstances. No subletting is permitted for any period, whether full or partial, without the Landlord’s prior written consent — which may be withheld for any reason.
+
+        {% if custom_clauses %}
+            {% for clause in custom_clauses if clause.tag == 'tenant_obligations_subletting_restricted' %}
+        C7.2.{{ 1 + loop.index }} {{ clause.text }}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+
+C8. Moving Out at the End of the Tenancy
+
+    C8.1 Except for fair wear and tear, the Tenant must return the Property and any items listed on the inventory to the Landlord in the same condition and state of cleanliness as they were at the start of the Tenancy.
+
+    C8.2 The Tenant must remove all possessions (including any furniture) belonging to the Tenant, any Member of the Tenant’s Household, or any visitor and all rubbish from the Property at the end of the Tenancy. If any such possessions are left at the Property after the Tenancy has ended, the Tenant will be responsible for meeting all reasonable removal and storage charges. The Landlord will remove and store the possessions for one month (other than any perishable items which will be disposed of immediately) and will take reasonable steps to notify the Tenant. If the items are not collected within one month, the Landlord may dispose of the items and the Tenant will be liable for the reasonable costs of disposal. The costs of removal, storage, and disposal may be deducted from any sale proceeds.
+
+    C8.3 The Tenant must give vacant possession and return all keys to the Landlord at the end of the Tenancy.
+
+    C8.4 The Tenant must provide the Landlord with a forwarding address at the end of the Tenancy.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'tenant_obligations_end_of_term' %}
+    C8.{{ 4 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+Section D: Landlord’s obligations
+
+
+D1. To Give the Tenant Possession at the Start of the Tenancy  
+
+    D1.1 The Landlord must give the Tenant possession of the Property at the start of the Tenancy.
+
+
+
+
+D2. Not to Interfere with the Tenant’s Right to Quiet Enjoyment of the Property  
+
+    D2.1 The Landlord must not interrupt or interfere with the Tenant’s right to quiet enjoyment of the Property.
+
+
+
+
+
+D3. Repair and Maintenance of the Property and Items Listed on the Inventory
+
+    D3.1 In accordance with section 11 of the Landlord and Tenant Act 1985, the Landlord shall:
+
+        (a) keep in repair the structure and exterior of the Property (including drains, external pipes, gutters and external windows);  
+        (b) keep in repair and proper working order the installations in the Property for the supply of water, gas and electricity and for sanitation (including basins, sinks, baths and sanitary conveniences, but not other fixtures, fittings and appliances for making use of the supply of water, gas or electricity); and  
+        (c) keep in repair and proper working order the installations in the Property for space heating and heating water.
+
+    D3.2 In accordance with section 11 of the Landlord and Tenant Act 1985, the Landlord is not required:
+
+        (a) to repair anything which the Tenant is liable to repair by virtue of the Tenant’s duty to take reasonable care of the Property (see clause C4.1);  
+        (b) to rebuild or reinstate the Property in the case of destruction or damage by fire, storm or flood; or  
+        (c) to keep in repair or maintain anything which the Tenant is entitled to remove from the Property.
+
+    D3.3 The Landlord must keep in repair and proper working order any furniture, fixtures, fittings and appliances which are listed in the inventory, except where the damage or need for repair is a result of the Tenant’s failure to comply with the obligations in clause C4.1.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'landlord_obligations_general' %}
+    D3.{{ 3 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+D4. Insurance and Rent Suspension
+
+    D4.1 The Landlord must insure the Property against fire, flooding, and other risks usually covered by a comprehensive insurance policy and must use all reasonable efforts to arrange for any damage caused by an insured risk to be remedied as soon as possible.
+
+    D4.2 The Tenant is responsible for arranging insurance of the Tenant’s own belongings.
+
+    D4.3 The Landlord must provide the Tenant with a copy of the insurance policy at the request of the Tenant.
+
+    D4.4 Where the Property is uninhabitable because of damage caused to the Property by an insured risk, then, unless the damage was caused by the Tenant’s negligence or failure to comply with the Tenant’s obligations under this agreement, the Tenant shall not be required to pay rent until the Property is fit for occupation and use.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'landlord_obligations_insurance' %}
+    D4.{{ 4 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+
+
+
+
+
+
+Section E: Landlord’s grounds (reasons) for possession during the fixed term
+
+E1. Statutory Grounds for Possession
+
+    E1.1 If any of the grounds (reasons) specified in clause E1.2 apply, the Landlord may seek to repossess the Property (sometimes referred to as forfeiture and re-entry) during the fixed term by giving the Tenant notice under section 8 of the Housing Act 1988 of his intention to apply to court for possession and, subsequently, applying to the court for a possession order.
+
+    E1.2 The grounds referred to in clause E1.1 are the following grounds which are contained in Schedule 2 to the Housing Act 1988:
+
+    - Ground 2: mortgagee (lender) entitled to possession  
+    - Ground 8: at least 8 weeks’ or two months’ rent arrears  
+    - Ground 10: some rent overdue  
+    - Ground 11: tenant persistently late in paying rent  
+    - Ground 12: breach of any term(s) of tenancy agreement  
+    - Ground 13: deterioration of property/common parts due to tenant/occupants  
+    - Ground 14: nuisance, annoyance, or criminal conduct by tenant/visitors  
+    - Ground 15: deterioration of furniture due to ill-treatment  
+    - Ground 17: tenancy obtained by false statement  
+
+
+
+E2. Grounds for Possession Where the Tenancy Ceases to be Assured
+
+    E2.1 If the Tenancy ceases to be an assured (shorthold) tenancy, the Landlord reserves the right to end the Tenancy (usually referred to as forfeiture and re-entry) if:
+
+    (a) the rent is unpaid 14 days after becoming payable, whether it has been formally demanded or not;  
+    (b) the Tenant is declared bankrupt; or  
+    (c) the Tenant breaches any term of this Tenancy.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'landlord_possession_rights' %}
+    E2.{{ loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+{% if has_break_clause == 'yes' %}
+{% if break_clause_notice | int < 2 %}
+    {% set break_notice = 2 %}
+{% else %}
+    {% set break_notice = break_clause_notice | int %}
+{% endif %}
+Section F: Break clauses
+
+F1. Tenant’s Break Clause
+
+    F1.1 The Tenant may end this Tenancy before the Tenancy end date specified in clause B4 by giving the Landlord at least {{ break_clause_notice }} months’ notice in writing.
+
+    F1.2 The Tenant cannot give notice under clause F1.1 within the first {{ break_clause_notice }} months of the Tenancy.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'break_clause_tenant' %}
+    F1.{{ 2 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+F2. Landlord’s Break Clause
+
+    F2.1 The Landlord may end this Tenancy before the fixed end date specified in clause B4 by giving the Tenant at least {{ break_clause_notice }} months’ notice in writing of their intention to terminate the Tenancy.
+
+    F2.2 The Landlord must not serve notice under clause F2.1 within the first 4 months of the Tenancy.
+
+    F2.3 The Tenancy may not be terminated under this clause before 6 months have passed since the beginning of the Tenancy.
+
+    F2.4 This clause is subject to the requirements of section 21 of the Housing Act 1988, including the requirement that any notice must be properly served in the prescribed form and possession must be granted by a court order.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'break_clause_landlord' %}
+    F2.{{ 4 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{% if mortgage_check == 'yes' %}
+F3. Break Clause Where the Landlord Is in Mortgage Arrears and a Receiver Has Been Appointed
+
+    F3.1 The Landlord or the Tenant may end this Tenancy before the Tenancy end date specified in clause B4 in the circumstances specified in clause F3.2. This is subject to compliance by the terminating party with the requirements specified in clause F3.3.
+
+    F3.2 The circumstances are that:
+
+        (a) the Property is subject to a mortgage under which the Landlord is the mortgagor (borrower);  
+        (b) the mortgagee (lender) under that mortgage has appointed a receiver in relation to the Property; and  
+        (c) the receiver has notified the Tenant of his appointment by giving the Tenant a copy of the letter of appointment.
+
+    F3.3 The requirements are that:
+
+        (a) the terminating party must give notice in writing to the other party specifying the termination date (and where the Tenant is the terminating party the notice should be given to both the Landlord and the receiver);  
+        (b) the notice must not be given within the first 4 months of the Tenancy; and  
+        (c) the termination date specified in the notice must be at least two months after the date of service of the notice.
+
+    F3.4 In this clause “receiver” means a person appointed by the mortgagee (lender) under the terms of the mortgage or pursuant to powers in the Law of Property Act 1925.
+{% endif %}
+
+
+F4. Landlord’s Break Clause for the Purpose of Selling the Property
+
+    F4.1 Where the Landlord intends to sell the Property, the Landlord may end this Tenancy before the Tenancy end date specified in clause B4 by following these steps:
+
+        Step 1: The Landlord must give written notice to the Tenant stating their intention to market the Property for sale. This notice may not be served within the first 2 months of the Tenancy.
+
+        Step 2: Not more than 4 months after service of the Step 1 notice, the Landlord must give a break notice to the Tenant which:
+
+            (a) specifies the date on which the Tenancy will end, which must be at least 2 months from the date of service of the break notice and at least 4 months after the date of the initial written notice; and  
+            (b) is accompanied by evidence showing that the Property is genuinely on the market for sale.
+
+    F4.2 If the Landlord complies with these steps, the Tenancy will end on the date specified in the break notice.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'break_clause_landlord_sale' %}
+    F4.{{ 2 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+F5. Terms Applicable Where Tenancy Ends Under Clause F2, F3, or F4
+
+    F5.1 The ending of the Tenancy under clause F2, F3, or F4 does not release the Landlord or the Tenant from any outstanding obligations or claims that existed prior to the termination date.
+
+    F5.2 Where the Tenancy is brought to an end under clause F2, F3, or F4, any rent paid by the Tenant in respect of a period following the termination date must, provided the Tenant has vacated the Property as required, be repaid to the Tenant within 14 days of the Tenancy ending.
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'break_clause_universal' %}
+    F5.{{ 2 + loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+{% if custom_clauses %}
+Section G: Additional Terms Between the Landlord and Tenant
+
+The following additional terms have been agreed between the Landlord and the Tenant and shall form part of this Tenancy Agreement:
+
+    {% for clause in general_clauses %}
+    G{{ loop.index }}. {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+
+
+Section H: Contact details and service of written notices
+
+
+H1. The Landlord’s Contact Details and Service of Notices on the Landlord
+
+    H1.1 Service by post or hand delivery  
+    The Landlord agrees that any notices given under or in connection with this agreement may be served by being left at or sent by post to the following address:  
+    **{{ notice_service_address if notice_service_same_as_landlord == 'no' else landlord_address }}**  
+    Notices shall be taken to be received the day after being left at the property or the day after posting.
+
+    H1.2 Service by email  
+    The Landlord {% if notice_service_same_as_landlord == 'no' and notice_service_email_allowed == 'yes' %}**does**{% else %}**does not**{% endif %} agree that notices may alternatively be served by email.  
+    {% if notice_service_same_as_landlord == 'no' and notice_service_email_allowed == 'yes' %}
+    Email for this purpose: **{{ notice_service_email }}**  
+    {% endif %}
+    Notices sent by email shall be taken to be received the day after being sent.
+
+    H1.3 Emergency Contact Details  
+    The Landlord’s telephone number is: **{{ landlord_phone }}**
+
+
+
+H2. The Tenant’s Contact Details and Service of Notices on the Tenant
+
+    H2.1 Service by post or hand delivery  
+    The Tenant agrees that any notices required under this agreement may be served during the Tenancy by being left at or sent to the Property address:  
+    **{{ property_address }}**
+
+    H2.2 Service by email  
+    The Tenant {% if tenant_email %}**does**{% else %}**does not**{% endif %} agree that notices may alternatively be served by email.  
+    {% if tenant_email %}
+    Tenant’s email address: **{{ tenant_email }}**  
+    {% endif %}
+    Notices sent by email shall be taken to be received the day after being sent.
+
+    H2.3 Exceptions  
+    Any notice served under **section 8** or **section 21** of the Housing Act 1988 must be served in hard copy in accordance with clause H2.1.
+
+    H2.4 Emergency Contact Details  
+    The Tenant’s telephone number is: **{{ tenant_phone if tenant_phone else '[Not provided]' }}**
+
+
+
+Section I: Signatures
+
+    {% if is_deed %}
+    Signed and executed as a deed by the following parties:
+    {% else %}
+    Signed by the following parties:
+    {% endif %}
+
+    {% for tenant in tenant_info %}
+    
+    Tenant {{ loop.index }}
+    Signature: ……………………………………  
+    Full name (block capitals): {{ tenant.name }}  
+    Address: ...............................................  
+    Date: ....................................................  
+
+    {% if is_deed %}
+    Witness  
+    Signature: ……………………………………  
+    Full name (block capitals): ................................  
+    Address: ...............................................  
+    Date: ....................................................
+    {% endif %}
+    {% endfor %}
+
+    Landlord  
+    Signature: ……………………………………  
+    Full name (block capitals): {{ landlord_name }}  
+    Address: {{ landlord_address }}  
+    Date: ....................................................  
+
+    {% if is_deed %}
+    Witness  
+    Signature: ……………………………………  
+    Full name (block capitals): ................................  
+    Address: ...............................................  
+    Date: ....................................................
+    {% endif %}

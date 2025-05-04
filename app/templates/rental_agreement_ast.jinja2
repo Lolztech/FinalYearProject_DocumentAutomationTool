@@ -1,0 +1,226 @@
+ASSURED SHORTHOLD
+TENANCY
+AGREEMENT
+For letting a residential dwelling
+
+Important Notes for Tenants
+This tenancy agreement is a legal and binding contract and the Tenant is responsible for payment of the rent for the entire agreed term. The agreement may not be terminated early unless the agreement contains a break clause, or written permission is obtained from the Landlord.
+
+{% if joint_liability_clause %}
+{{ joint_liability_clause }}
+{% else %}
+The tenant is solely responsible for all obligations, including rent and repairs, under this agreement.
+{% endif %}
+
+If you are unsure of your obligations under this agreement, then you are advised to take independent legal advice before signing.
+
+General Notes
+1. This tenancy agreement is for letting {{ "unfurnished" if furnished == "no" else "furnished" }} accommodation on an assured shorthold tenancy within the provisions of the Housing Act 1988 as amended by part III of the Housing Act 1996. As such, this is a legal document and should not be used without adequate knowledge of the law of landlord and tenant.
+2. Prospective tenants should have an adequate opportunity to read and understand the tenancy agreement before signing in order for this agreement to be fully enforceable.
+3. This agreement may be used for residential tenancies of three years or less. Agreements for tenancies of a longer duration should be drawn up by deed.
+4. Section 11, Landlord and Tenant Act 1985 – these obligations require the Landlord to keep in repair the structure and exterior of the dwelling, and to keep in repair and proper working order the installations for the supply of water, gas and electricity and the installations in the Property for space heating and heating water.
+5. Section 196 of the Law of Property Act 1925 provides that a notice shall be sufficiently served if sent by registered or recorded delivery post (if the letter is not returned undelivered) to the tenant at the Property or the last known address of the Tenant or left addressed to the Tenant at the Property.
+6. This agreement has been drawn up after consideration of the Office of Fair Trading’s Guidance on Unfair terms in Tenancy Agreements.
+
+---
+
+THIS AGREEMENT is made on the date specified below BETWEEN the Landlord and the Tenant.  
+It is intended that the tenancy created by this Agreement is and shall be an assured shorthold tenancy within the meaning of the Housing Acts.
+
+TENANCY PARTICULARS
+
+Date: {{ start_date }}
+Landlord: {{ landlord_name }}
+Landlord’s Address: {{ landlord_address }}
+Tenant(s): {{ tenant_names | join(', ') }}
+Non-Tenant Occupant(s): {{additional_occupants | join(', ')}}
+Property: {{ property_address }}
+Term: {{ lease_term }}
+Commencing on: {{ start_date }}
+{% if rent_frequency == 'weekly' %}
+Rent: £{{ weekly_rent }} per week
+{% elif rent_frequency == 'biweekly' %}
+Rent: £{{ biweekly_rent }} per fortnight
+{% else %}
+Rent: £{{ monthly_rent }} per month
+{% endif %}
+
+Payment method: {{ payment_method }}
+Deposit: £{{ deposit_amount }} protected by {{ deposit_protection_scheme }}
+
+1 INTERPRETATION
+
+1.1 The expression "the Landlord" shall apply to the person who is for the time being entitled to the reversionary interest in the Premises on determination of the Term.
+
+1.2 The expression "the Tenant" includes the persons deriving title under the Tenant.
+
+1.3 Where "the Landlord" or "the Tenant" for the time being comprises two or more persons, the obligations made by or with them in this agreement shall be made by or with such persons jointly and severally (this means that if there is more than one Tenant, each Tenant will be liable for all sums due under the agreement and not just liable for a proportionate part).
+
+1.4 Words importing only the masculine gender include the feminine gender, and words importing the singular number include the plural number and vice versa.
+
+1.5 References to any statutory provision include any statutory re-enactment or modification of it for the time being in force.
+
+1.6 Any obligation by the Tenant not to do any act or thing shall include an obligation not to permit or allow the doing of such act or thing.
+
+1.7 References to the Premises include references to any part or parts of the Premises and to the fixtures {% if furnished == 'yes' %}, furniture, furnishings,{% endif %} and contents as set out in the Inventory.
+
+{% if custom_clauses %}
+    {% set base_number = 8 %}
+    {% for clause in custom_clauses if clause.tag == 'interpretation' %}
+1.{{ base_number + loop.index0 }} {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+2 AGREEMENT
+
+2.1 The Landlord agrees to let and the Tenant agrees to take the Premises for the Term at the Rent.
+
+2.2 The Rent shall be payable in advance on the {{ payment_day }} of each and every {% if rent_frequency == 'weekly' %}week{% elif rent_frequency == 'biweekly' %}fortnight{% else %}month{% endif %} of the Term, with the first of such payments to be made on {{ first_payment_due_date }}.  
+The first payment amount is £{{ first_payment_amount }}.  
+The payment for any period of less than a full {% if rent_frequency == 'weekly' %}week{% elif rent_frequency == 'biweekly' %}fortnight{% else %}month{% endif %} is to be apportioned on a daily basis.
+
+{% set next_clause_number = 3 %}
+
+{% if utilities_included == 'yes' %}
+2.{{ next_clause_number }} The Rent includes the following utilities: {{ which_utilities_included }}.
+{% set next_clause_number = next_clause_number + 1 %}
+{% endif %}
+
+{% if council_tax_included == 'yes' %}
+2.{{ next_clause_number }} The Rent includes payment for council tax to the local authority.
+{% set next_clause_number = next_clause_number + 1 %}
+{% endif %}
+
+{% if custom_clauses %}
+    {% for clause in custom_clauses if clause.tag == 'agreement' %}
+2.{{ next_clause_number + loop.index0 }} {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+3 TENANT'S OBLIGATIONS
+
+3.1 Rent
+
+To pay the Rent during the Term on the days and in the manner stated above (whether formally demanded or not) without any deduction (except where it is lawful to do so) to the Landlord by {{ payment_method }}.
+
+{% if custom_clauses %}
+    {% for clause in custom_clauses if clause.tag == 'tenant_obligations_rent' %}
+3.1.{{ loop.index }} {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+3.2 Outgoings
+
+To pay promptly, to the authorities to whom they are due,{% if council_tax_included == 'no' %} council tax and{% endif %} outgoings{% if utilities_included == 'no' %} (including water and sewerage charges, gas, electric, light and telephone (if any) relating to the property){% elif which_utilities_not_included %} (including {{ which_utilities_not_included }} relating to the property){% endif %}, including any which are imposed after the date of this Agreement (even if of a novel nature){% if utilities_included == 'no' %} and to pay the total cost of any re-connection fee relating to the supply of water, gas, electricity and telephone if the same is disconnected.{% elif which_utilities_not_included %} and to pay the total cost of any re-connection fee relating to the supply of {{ which_utilities_not_included }} if the same is disconnected.{% endif %}{% if utilities_included == 'no' or which_utilities_not_included %} The Tenant agrees to notify the Landlord prior to changing supplier for any of the utility services (i.e. gas, electricity, water supply etc.).{% endif %}
+
+    {% if custom_clauses %}
+        {% for clause in custom_clauses if clause.tag == 'tenant_obligations_outgoings' %}
+    3.2.{{ loop.index }} {{ clause.text }}
+        {% endfor %}
+    {% endif %}
+
+
+3.3 Services
+
+{% set tenant_utilities = which_utilities_not_included.split(', ') if utilities_included == 'yes' else ['gas', 'electricity', 'fuel oil', 'water', 'telephone'] %}
+
+{% if tenant_utilities %}
+3.3.1 To pay for (direct to the relevant authority or supplier) all {{ tenant_utilities | join(', ') }} which is consumed or supplied on or to the Premises and for all telephone calls made throughout the Term, and the amount of all rentals and standing charges for {{ tenant_utilities | join(', ') }} or the provision of a telephone line throughout the Term.
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.2 To pay the amount of the television licence fee (and any charges for cable or satellite television services for the Premises) throughout the Term.
+{% else %}
+3.3.1 To pay the amount of the television licence fee (and any charges for cable or satellite television services for the Premises) throughout the Term.
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.3 To ensure that all accounts issued by the relevant authorities or suppliers are issued to and made out to the Tenant for the duration of the Term.  
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.4 Where the Tenant allows, either by default of payment or specific instruction, the utility or other services to be cut off, whether during or at the end of the Term, the Tenant shall be liable to pay the costs associated with reconnecting or resuming those services.
+{% else %}
+3.3.2 Where the Tenant allows, either by default of payment or specific instruction, the utility or other services to be cut off, whether during or at the end of the Term, the Tenant shall be liable to pay the costs associated with reconnecting or resuming those services.
+{% endif %}
+
+{% if custom_clauses %}
+    {% for clause in custom_clauses if clause.tag == 'tenant_obligations_services' %}
+3.3.{{ loop.index + 4 if tenant_utilities else loop.index + 2 }} {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+
+
+
+{# 3.2 Outgoings
+
+To pay promptly, to the authorities to whom they are due, 
+{% if council_tax_included == 'no' %}council tax and {% endif %}outgoings{% if utilities_included == 'no' %} (including water and sewerage charges, gas, electric, light and telephone (if any) relating to the property){% elif utilities_included == 'yes' and which_utilities_included %}
+    {% set utilities = ['gas', 'electricity', 'water', 'sewerage', 'telephone'] %}
+    {% set non_included_utilities = [] %}
+    {% for utility in utilities %}
+        {% if utility not in which_utilities_included | lower %}
+            {% set _ = non_included_utilities.append(utility) %}
+        {% endif %}
+    {% endfor %}
+    {% if non_included_utilities %} (including {{ non_included_utilities | join(', ') }} relating to the property){% endif %}
+{% endif %}
+, including any which are imposed after the date of this Agreement (even if of a novel nature)
+{% if utilities_included == 'no' %}
+and to pay the total cost of any re-connection fee relating to the supply of water, gas, electricity and telephone if the same is disconnected.
+{% elif utilities_included == 'yes' and non_included_utilities %}
+and to pay the total cost of any re-connection fee relating to the supply of {{ non_included_utilities | join(', ') }} if the same is disconnected.
+{% endif %}
+
+{% if utilities_included == 'no' or (utilities_included == 'yes' and non_included_utilities) %}
+The Tenant agrees to notify the Landlord prior to changing supplier for any of the utility services (i.e. gas, electricity, water supply etc.).
+{% endif %}
+
+{% if custom_clauses %}
+    {% for clause in custom_clauses if clause.tag == 'tenant_obligations_outgoings' %}
+3.2.{{ loop.index }} {{ clause.text }}
+    {% endfor %}
+{% endif %}
+
+
+3.3 Services
+
+{% set all_utilities = ['gas', 'electricity', 'fuel oil', 'water', 'telephone'] %}
+{% set tenant_utilities = [] %}
+
+{% if utilities_included == 'no' %}
+    {% set tenant_utilities = all_utilities %}
+{% elif utilities_included == 'yes' %}
+    {% for utility in all_utilities %}
+        {% if utility not in which_utilities_included | lower %}
+            {% set _ = tenant_utilities.append(utility) %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.1 To pay for (direct to the relevant authority or supplier) all {{ tenant_utilities | join(', ') }} which is consumed or supplied on or to the Premises and for all telephone calls made throughout the Term, and the amount of all rentals and standing charges for {{ tenant_utilities | join(', ') }} or the provision of a telephone line throughout the Term.
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.2 To pay the amount of the television licence fee (and any charges for cable or satellite television services for the Premises) throughout the Term.
+{% else %}
+3.3.1 To pay the amount of the television licence fee (and any charges for cable or satellite television services for the Premises) throughout the Term.
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.3 To ensure that all accounts issued by the relevant authorities or suppliers are issued to and made out to the Tenant for the duration of the Term.  
+{% endif %}
+
+{% if tenant_utilities %}
+3.3.4 Where the Tenant allows, either by default of payment or specific instruction, the utility or other services to be cut off, whether during or at the end of the Term, the Tenant shall be liable to pay the costs associated with reconnecting or resuming those services.
+{% else %}
+3.3.2 Where the Tenant allows, either by default of payment or specific instruction, the utility or other services to be cut off, whether during or at the end of the Term, the Tenant shall be liable to pay the costs associated with reconnecting or resuming those services.
+{% endif %}
+
+{% if custom_clauses %}
+    {% for clause in custom_clauses if clause.tag == 'tenant_obligations_services' %}
+3.3.{{ loop.index + 4 if tenant_utilities else loop.index + 2 }} {{ clause.text }}
+    {% endfor %}
+{% endif %} #}
