@@ -5,7 +5,7 @@ from docxtpl import DocxTemplate
 import datetime
 import os
 
-LLAMA_API_URL = os.getenv("LLAMA_API_URL", "http://ollama:11434/api/generate")
+LLAMA_API_URL = os.getenv("LLAMA_API_URL", "http://localhost:11434")
 LLAMA_MODEL = os.getenv("LLAMA_MODEL", "llama3:8b")
 
 
@@ -150,8 +150,9 @@ def llama_answer(user_input: str, active_schema: str = None, current_field: str 
         if user_state == "answer":
             print("[DEBUG] User answered with a document choice (probably). Guiding to confirmation.")
             guidance = (
-                "Your goal is to guide the user to pick one of the supported contract types (Rental Agreement or NDA).\n"
-                "- If the user clearly picks one, proceed.\n"
+                "You are a Assued Shorthold Tennancy agreemetn document automation bot powered by AI, and for you to initiate your document drafting functions you need the user to say 'Rental agreement' and confirm that this is what they want\n"
+                "Your goal is to guide the user to pick one of the supported contract types which is only a Rental Agreement.\n"
+                "- The user needs to say 'I want a rental agreement', your goal it to get them to say that\n"
                 "- If they go off-topic, gently remind them of the available options."
             )
 
@@ -160,7 +161,7 @@ def llama_answer(user_input: str, active_schema: str = None, current_field: str 
             guidance = (
                 "The user has asked a question.\n"
                 "- Present information clearly. You can use bullets, paragraphs, and empty lines where appropriate to make the information easy to read.\n"
-                "- If the user naturally expresses interest, invite them to proceed with creating a Rental Agreement or NDA.\n"
+                "- If the user naturally expresses interest, invite them to proceed with creating a Rental Agreement.\n"
             )
 
         elif user_state == "off_topic" or user_state in {"none"}:
@@ -168,7 +169,7 @@ def llama_answer(user_input: str, active_schema: str = None, current_field: str 
             guidance = (
 
                 "- Politely acknowledge and answer their statement in whatever format you deem fit to do so.\n"
-                "- Gently redirect them back to picking one of the two supported document types: Rental Agreement or NDA.\n"
+                "- Gently redirect them back to saying they want a Rental Agreement.\n"
                 "- Present information clearly. You can use bullets, paragraphs, and empty lines where appropriate to make the information easy to read.\n"
             )
         else:
@@ -179,9 +180,8 @@ def llama_answer(user_input: str, active_schema: str = None, current_field: str 
         "Important:\n"
         "- Speak directly to the user.\n"
         "- Do not prefix your reply with 'Assistant:' or 'Bot:' or any label.\n"
-        "You only support generating the following contract types:\n"
+        "You only support generating the following contract type:\n"
         "- Rental Agreement (rental_agreement)\n"
-        "- Non-Disclosure Agreement (nda)\n"
         f"{slots_snippet}{expected_fields_snippet}Recent conversation history:\n{history_snippet}\n"
         f"User: {user_input}\n"
         f"{guidance}"
@@ -190,7 +190,7 @@ def llama_answer(user_input: str, active_schema: str = None, current_field: str 
 
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt,
             "temperature": 0.4,
@@ -214,7 +214,7 @@ def generate_greeting():
         "Let them know you’re here to help them generate a rental agreement for a property in England or Wales.\n\n"
 
         "Explain briefly:\n"
-        "- Once they select the document type (Rental Agreement or NDA), you will ask them a series of structured questions.\n"
+        "- Once they select the document type (Rental Agreement), you will ask them a series of structured questions.\n"
         "- The user can stop at any time by asking you to terminate the session.\n"
         "- At any point, they can also ask questions about the fields or the process.\n"
         "- After each answer, the tool will ask for confirmation in case of mistakes.\n"
@@ -225,7 +225,7 @@ def generate_greeting():
     )
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt,
             "stream": False,
@@ -244,7 +244,7 @@ def generate_greeting():
 def classify_doc_intent(user_input: str) -> str:
     """
     Classifies whether the user wants to start a document, ask a question, go off-topic, or exit.
-    Returns one of: 'start_rental', 'start_nda', 'question', 'off_topic', 'terminate_session'
+    Returns one of: 'start_rental', 'question', 'off_topic', 'terminate_session'
     """
 
     prompt = f"""
@@ -256,7 +256,6 @@ Analyze the user's message carefully:
 
 Classify it as strictly one of the following:
 - start_rental: The user explicitly wants to create a rental agreement.
-- start_nda: The user explicitly wants to create an NDA.
 - question: The user is asking a question about rental agreements, NDAs, the assistant, or anything related.
 - off_topic: The message is casual, playful, emotional, or unrelated to documents.
 - terminate_session: The user expresses a desire to stop, quit, cancel, or exit.
@@ -269,11 +268,11 @@ Important rules:
 - Prefer terminate_session aggressively if the user sounds like they are expressing ending the task.
 - If unsure between "terminate_session" and other options, **prefer terminate_session**.
 
-Respond only with one label: start_rental, start_nda, question, off_topic, or terminate_session.
+Respond only with one label: start_rental, question, off_topic, or terminate_session.
 """
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt.strip(),
             "stream": False,
@@ -327,7 +326,7 @@ Respond with only one label: answer, question, off_topic, or terminate_session.
 """
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt.strip(),
             "stream": False,
@@ -370,7 +369,7 @@ Respond with ONLY one word: yes, no, question, off_topic, or terminate_session.
 """
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt.strip(),
             "stream": False,
@@ -415,7 +414,7 @@ If the value is "yes" or "no" (in any case), return exactly "yes" or "no" in low
 """
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt.strip(),
             "stream": False,
@@ -468,7 +467,7 @@ Your response (choose only one: fixed, fixed_percentage, cpi_indexed, fixed_incr
 """
 
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt.strip(),
             "stream": False,
@@ -530,7 +529,7 @@ Here is the clause to classify:
 Respond **only** with one of the section tags listed above (e.g., "tenant_obligations_use_of_premises").
 """
     try:
-        res = requests.post(LLAMA_API_URL, json={
+        res = requests.post(f"{LLAMA_API_URL}/api/generate", json={
             "model": LLAMA_MODEL,
             "prompt": prompt.strip(),
             "stream": False,

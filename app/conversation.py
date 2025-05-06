@@ -7,7 +7,7 @@ from typing import Dict, Any
 class ConversationState:
     def __init__(self):
         self.greeted = False
-        self.state = "doc_selection"  # Possible values: doc_selection, info_retrieval
+        self.state = "doc_selection" 
         self.active_schema = None
         self.current_field_index = None
         self.slots = {}
@@ -23,13 +23,13 @@ class ConversationState:
         self.awaiting_edit_field_selection = False
         self.awaiting_doc_type_confirmation = False
         self.awaiting_tenant_count = False
-        self.awaiting_tenant_name_index = None  # Index we're currently asking for
+        self.awaiting_tenant_name_index = None 
         self.tenant_fields_order = ["name", "email", "phone"]
-        self.current_tenant_step = 0  # index in tenant_fields_order
-        self.awaiting_additional_occupant_index = None  # For iterating additional occupants
+        self.current_tenant_step = 0 
+        self.awaiting_additional_occupant_index = None  
         self.awaiting_additional_occupant_reset_confirmation = False 
         self.after_additional_occupant_recollection = False
-        self.awaiting_tenant_reset_confirmation = False  # set when user wants to change tenant count
+        self.awaiting_tenant_reset_confirmation = False  
         self.after_tenant_recollection = False
         self.recollecting_dependent = False
         self.awaiting_custom_clause = False
@@ -97,7 +97,7 @@ class ConversationState:
 
             }
 
-            self.current_field_index = 16  # index of 'utilities_included'
+            self.current_field_index = 16 
             expected_field = self._current_field()
             response = expected_field["question"]
             self.recent_messages.append({"user": user_input, "bot": response})
@@ -300,11 +300,14 @@ class ConversationState:
             response = "Just to confirm — would you like to generate a *Rental Agreement*? (yes/no)"
 
         elif intent == "start_nda":
-            print("[DEBUG] Detected intent: start_nda (user wants to create NDA)")
+            print("[DEBUG] Detected intent: start_nda (user asked for NDA, which is unsupported)")
             self.awaiting_doc_type_confirmation = True
-            self._pending_schema = "nda"
-            self.prompted_for_doc_type = False
-            response = "Just to confirm — would you like to generate a *Non-Disclosure Agreement (NDA)*? (yes/no)"
+            self._pending_schema = None  # Clear any pending schema
+            self.prompted_for_doc_type = True
+            response = (
+                "Sorry, Non-Disclosure Agreements (NDAs) aren't supported right now.\n"
+                "Would you like to generate a rental agreement instead? (yes/no)"
+            )
 
         elif intent == "question":
             print("[DEBUG] Detected intent: question (user is asking something relevant)")
@@ -1306,6 +1309,144 @@ class ConversationState:
             self.pending_confirmation_field = None
             self.after_additional_occupant_recollection = False
             return self._render_summary_and_ask_if_happy()
+        
+         # Handle individual property_includes editing -------------------------------------------------------------------------------------------------------------------------------------------
+
+        if hasattr(self, "awaiting_property_include_index") and self.awaiting_property_include_index is not None:
+            index = self.awaiting_property_include_index
+            print(f"[DEBUG] Editing property include at index {index} with input: {user_input}")
+
+            if user_input.strip().lower() in {"delete", "none"}:
+                removed = self.slots["property_includes"].pop(index)
+                print(f"[DEBUG] Deleted property include: {removed}")
+                self.awaiting_property_include_index = None
+                self.awaiting_final_confirmation = True
+                self.editing_mode = False
+                response = f"Removed included space {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
+                self.recent_messages[-1]["bot"] = response
+                return response
+
+            # Update the specific item
+            self.slots["property_includes"][index] = user_input.strip()
+            print(f"[DEBUG] Updated property include {index + 1} to: {user_input.strip()}")
+
+            self.awaiting_property_include_index = None
+            self.awaiting_final_confirmation = True
+            self.editing_mode = False
+            response = self._render_summary_and_ask_if_happy()
+            self.recent_messages[-1]["bot"] = response
+            return response
+        
+
+        # Handle individual shared_areas_description editing -----------------------------------------------------------------------------------------------------------------------------------
+
+        if hasattr(self, "awaiting_shared_area_index") and self.awaiting_shared_area_index is not None:
+            index = self.awaiting_shared_area_index
+            print(f"[DEBUG] Editing shared area at index {index} with input: {user_input}")
+
+            if user_input.strip().lower() in {"delete", "none"}:
+                removed = self.slots["shared_areas_description"].pop(index)
+                print(f"[DEBUG] Deleted shared area: {removed}")
+                self.awaiting_shared_area_index = None
+                self.awaiting_final_confirmation = True
+                self.editing_mode = False
+                response = f"Removed shared area {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
+                self.recent_messages[-1]["bot"] = response
+                return response
+
+            # Update the specific item
+            self.slots["shared_areas_description"][index] = user_input.strip()
+            print(f"[DEBUG] Updated shared area {index + 1} to: {user_input.strip()}")
+
+            self.awaiting_shared_area_index = None
+            self.awaiting_final_confirmation = True
+            self.editing_mode = False
+            response = self._render_summary_and_ask_if_happy()
+            self.recent_messages[-1]["bot"] = response
+            return response
+        
+        # Handle individual which_utilities_included edit -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+        if hasattr(self, "awaiting_utility_included_index") and self.awaiting_utility_included_index is not None:
+            index = self.awaiting_utility_included_index
+            print(f"[DEBUG] Editing included utility at index {index} with input: {user_input}")
+
+            if user_input.strip().lower() in {"delete", "none"}:
+                deleted = self.slots["which_utilities_included"].pop(index)
+                print(f"[DEBUG] Deleted included utility: {deleted}")
+                self.awaiting_utility_included_index = None
+                self.awaiting_final_confirmation = True
+                self.editing_mode = False
+                response = f"Removed included utility {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
+                self.recent_messages[-1]["bot"] = response
+                return response
+
+            # Update utility
+            self.slots["which_utilities_included"][index] = user_input.strip()
+            print(f"[DEBUG] Updated included utility {index + 1}: {user_input.strip()}")
+            self.awaiting_utility_included_index = None
+            self.awaiting_final_confirmation = True
+            self.editing_mode = False
+            response = self._render_summary_and_ask_if_happy()
+            self.recent_messages[-1]["bot"] = response
+            return response
+        
+
+        # Handle individual which_utilities_not_included edit -----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        if hasattr(self, "awaiting_which_utilities_not_included_index") and self.awaiting_which_utilities_not_included_index is not None:
+            index = self.awaiting_which_utilities_not_included_index
+            print(f"[DEBUG] Editing excluded utility at index {index} with input: {user_input}")
+
+            if user_input.strip().lower() in {"delete", "none"}:
+                deleted = self.slots["which_utilities_not_included"].pop(index)
+                print(f"[DEBUG] Deleted excluded utility: {deleted}")
+                self.awaiting_which_utilities_not_included_index = None
+                self.awaiting_final_confirmation = True
+                self.editing_mode = False
+                response = f"Removed excluded utility {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
+                self.recent_messages[-1]["bot"] = response
+                return response
+
+            self.slots["which_utilities_not_included"][index] = user_input.strip()
+            print(f"[DEBUG] Updated excluded utility {index + 1}: {user_input.strip()}")
+            self.awaiting_which_utilities_not_included_index = None
+            self.awaiting_final_confirmation = True
+            self.editing_mode = False
+            response = self._render_summary_and_ask_if_happy()
+            self.recent_messages[-1]["bot"] = response
+            return response
+        
+        # Handle individual custom clause editing ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+        if hasattr(self, "awaiting_custom_clause_index") and self.awaiting_custom_clause_index is not None:
+            index = self.awaiting_custom_clause_index
+            print(f"[DEBUG] Editing custom clause at index {index} with input: {user_input}")
+
+            if user_input.strip().lower() in {"delete", "none"}:
+                clause = self.slots["custom_clauses"].pop(index)
+                print(f"[DEBUG] Deleted clause: {clause}")
+                self.awaiting_custom_clause_index = None
+                self.awaiting_final_confirmation = True
+                self.editing_mode = False
+                response = f"Removed custom clause {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
+                self.recent_messages[-1]["bot"] = response
+                return response
+
+            # Reclassify the edited clause with a new tag
+            updated_clause = {
+                "text": user_input.strip(),
+                "tag": classify_clause_tag(user_input.strip())
+            }
+            self.slots["custom_clauses"][index] = updated_clause
+            print(f"[DEBUG] Updated clause {index + 1}: {updated_clause}")
+
+            self.awaiting_custom_clause_index = None
+            self.awaiting_final_confirmation = True
+            self.editing_mode = False
+            response = self._render_summary_and_ask_if_happy()
+            self.recent_messages[-1]["bot"] = response
+            return response
 
         # Handle edits of stored items -------------------------------------------------------------------------------------------------------------
         
@@ -1319,8 +1460,14 @@ class ConversationState:
             custom_fields = [f"custom_clause_{i+1}" for i in range(len(custom_clauses))]
             additional_occupants = len(self.slots.get("additional_occupants", []))
             additional_occupant_fields = [f"additional_occupant_{i+1}" for i in range(additional_occupants)]
+            utility_included_fields = [f"which_utilities_included_{i+1}" for i in range(len(self.slots.get("which_utilities_included", [])))]
+            utility_excluded_fields = [f"which_utilities_not_included_{i+1}" for i in range(len(self.slots.get("which_utilities_not_included", [])))]
+            property_include_fields = [f"property_include_{i+1}" for i in range(len(self.slots.get("property_includes", [])))]
+            shared_area_fields = [f"shared_area_{i+1}" for i in range(len(self.slots.get("shared_areas_description", [])))]
 
-            all_fields = schema_fields + ["tenant_count"] + tenant_fields + custom_fields + additional_occupant_fields
+
+
+            all_fields = schema_fields + ["tenant_count"] + tenant_fields + custom_fields + additional_occupant_fields + utility_included_fields + utility_excluded_fields + property_include_fields + shared_area_fields
 
             print(f"[DEBUG] Available editable fields: {all_fields}")
 
@@ -1465,8 +1612,8 @@ class ConversationState:
                 return response
             
 
-            # Edit individual which_utilities_included (e.g., "utility_included_1")
-            if matched_field.startswith("utility_included_"):
+            # Edit individual which_utilities_included (e.g., "which_utilities_included_1")
+            if matched_field.startswith("which_utilities_included_"):
                 try:
                     index = int(matched_field.split("_")[-1]) - 1
                     if 0 <= index < len(self.slots.get("which_utilities_included", [])):
@@ -1489,8 +1636,8 @@ class ConversationState:
             
 
 
-            # Edit individual which_utilities_not_included (e.g., "utility_excluded_1")
-            if matched_field.startswith("utility_excluded_"):
+            # Edit individual which_utilities_not_included (e.g., "which_utilities_not_included_")
+            if matched_field.startswith("which_utilities_not_included_"):
                 try:
                     index = int(matched_field.split("_")[-1]) - 1
                     if 0 <= index < len(self.slots.get("which_utilities_not_included", [])):
@@ -1585,9 +1732,11 @@ class ConversationState:
                         return response
 
                     # CLEANUP + PROGRESSION
+                    print("[DEBUG] Normal progression inside if self.pending_confirmation_field == weekly_rent.")
                     self.awaiting_confirmation = False
                     self.pending_confirmation_value = None
                     self.pending_confirmation_field = None
+                    self.current_field_index += 1
 
                     if self.current_field_index >= len(SCHEMAS[self.active_schema]["fields"]):
                         print("[DEBUG] All fields collected — rendering summary.")
@@ -2144,148 +2293,6 @@ class ConversationState:
                 self.recent_messages[-1]["bot"] = response
                 return response
 
-            
-
-        # Handle individual custom clause editing ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        if hasattr(self, "awaiting_custom_clause_index") and self.awaiting_custom_clause_index is not None:
-            index = self.awaiting_custom_clause_index
-            print(f"[DEBUG] Editing custom clause at index {index} with input: {user_input}")
-
-            if user_input.strip().lower() in {"delete", "none"}:
-                clause = self.slots["custom_clauses"].pop(index)
-                print(f"[DEBUG] Deleted clause: {clause}")
-                self.awaiting_custom_clause_index = None
-                self.awaiting_final_confirmation = True
-                self.editing_mode = False
-                response = f"Removed custom clause {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
-                self.recent_messages[-1]["bot"] = response
-                return response
-
-            # Reclassify the edited clause with a new tag
-            updated_clause = {
-                "text": user_input.strip(),
-                "tag": classify_clause_tag(user_input.strip())
-            }
-            self.slots["custom_clauses"][index] = updated_clause
-            print(f"[DEBUG] Updated clause {index + 1}: {updated_clause}")
-
-            self.awaiting_custom_clause_index = None
-            self.awaiting_final_confirmation = True
-            self.editing_mode = False
-            response = self._render_summary_and_ask_if_happy()
-            self.recent_messages[-1]["bot"] = response
-            return response
-        
-
-        # Handle individual property_includes editing -------------------------------------------------------------------------------------------------------------------------------------------
-
-        if hasattr(self, "awaiting_property_include_index") and self.awaiting_property_include_index is not None:
-            index = self.awaiting_property_include_index
-            print(f"[DEBUG] Editing property include at index {index} with input: {user_input}")
-
-            if user_input.strip().lower() in {"delete", "none"}:
-                removed = self.slots["property_includes"].pop(index)
-                print(f"[DEBUG] Deleted property include: {removed}")
-                self.awaiting_property_include_index = None
-                self.awaiting_final_confirmation = True
-                self.editing_mode = False
-                response = f"Removed included space {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
-                self.recent_messages[-1]["bot"] = response
-                return response
-
-            # Update the specific item
-            self.slots["property_includes"][index] = user_input.strip()
-            print(f"[DEBUG] Updated property include {index + 1} to: {user_input.strip()}")
-
-            self.awaiting_property_include_index = None
-            self.awaiting_final_confirmation = True
-            self.editing_mode = False
-            response = self._render_summary_and_ask_if_happy()
-            self.recent_messages[-1]["bot"] = response
-            return response
-        
-
-        # Handle individual shared_areas_description editing -----------------------------------------------------------------------------------------------------------------------------------
-
-        if hasattr(self, "awaiting_shared_area_index") and self.awaiting_shared_area_index is not None:
-            index = self.awaiting_shared_area_index
-            print(f"[DEBUG] Editing shared area at index {index} with input: {user_input}")
-
-            if user_input.strip().lower() in {"delete", "none"}:
-                removed = self.slots["shared_areas_description"].pop(index)
-                print(f"[DEBUG] Deleted shared area: {removed}")
-                self.awaiting_shared_area_index = None
-                self.awaiting_final_confirmation = True
-                self.editing_mode = False
-                response = f"Removed shared area {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
-                self.recent_messages[-1]["bot"] = response
-                return response
-
-            # Update the specific item
-            self.slots["shared_areas_description"][index] = user_input.strip()
-            print(f"[DEBUG] Updated shared area {index + 1} to: {user_input.strip()}")
-
-            self.awaiting_shared_area_index = None
-            self.awaiting_final_confirmation = True
-            self.editing_mode = False
-            response = self._render_summary_and_ask_if_happy()
-            self.recent_messages[-1]["bot"] = response
-            return response
-        
-
-        # Handle individual which_utilities_included edit -----------------------------------------------------------------------------------------------------------------------------------------------------
-
-        if hasattr(self, "awaiting_utility_included_index") and self.awaiting_utility_included_index is not None:
-            index = self.awaiting_utility_included_index
-            print(f"[DEBUG] Editing included utility at index {index} with input: {user_input}")
-
-            if user_input.strip().lower() in {"delete", "none"}:
-                deleted = self.slots["which_utilities_included"].pop(index)
-                print(f"[DEBUG] Deleted included utility: {deleted}")
-                self.awaiting_utility_included_index = None
-                self.awaiting_final_confirmation = True
-                self.editing_mode = False
-                response = f"Removed included utility {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
-                self.recent_messages[-1]["bot"] = response
-                return response
-
-            # Update utility
-            self.slots["which_utilities_included"][index] = user_input.strip()
-            print(f"[DEBUG] Updated included utility {index + 1}: {user_input.strip()}")
-            self.awaiting_utility_included_index = None
-            self.awaiting_final_confirmation = True
-            self.editing_mode = False
-            response = self._render_summary_and_ask_if_happy()
-            self.recent_messages[-1]["bot"] = response
-            return response
-        
-
-        # Handle individual which_utilities_not_included edit -----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        if hasattr(self, "awaiting_which_utilities_not_included_index") and self.awaiting_which_utilities_not_included_index is not None:
-            index = self.awaiting_which_utilities_not_included_index
-            print(f"[DEBUG] Editing excluded utility at index {index} with input: {user_input}")
-
-            if user_input.strip().lower() in {"delete", "none"}:
-                deleted = self.slots["which_utilities_not_included"].pop(index)
-                print(f"[DEBUG] Deleted excluded utility: {deleted}")
-                self.awaiting_which_utilities_not_included_index = None
-                self.awaiting_final_confirmation = True
-                self.editing_mode = False
-                response = f"Removed excluded utility {index + 1}. Here's your updated summary:\n\n" + self._render_summary_and_ask_if_happy()
-                self.recent_messages[-1]["bot"] = response
-                return response
-
-            self.slots["which_utilities_not_included"][index] = user_input.strip()
-            print(f"[DEBUG] Updated excluded utility {index + 1}: {user_input.strip()}")
-            self.awaiting_which_utilities_not_included_index = None
-            self.awaiting_final_confirmation = True
-            self.editing_mode = False
-            response = self._render_summary_and_ask_if_happy()
-            self.recent_messages[-1]["bot"] = response
-            return response
-
 
         # Handle field input during editing mode -------------------------------------------------------------------------------------------------------------------------------------------------------
        
@@ -2577,21 +2584,28 @@ class ConversationState:
                 value = extract_field_value(user_input, expected_field["name"], expected_field["question"]) #expected_field["name"], expected_field["question"])
                 print(f"[DEBUG] extract_field_value for break clause notice period: {value}")
 
-                if value < 2:
-                    warning_msg = (
-                        "Under the Housing Act 1988, break clause notice must be at least **2 months**.\n\n"
-                        "Please enter a number **greater than or equal to 2** for the notice period."
-                    )
-                    self.recent_messages[-1]["bot"] = f"{warning_msg}\n\n{expected_field['question']}"
-                    return f"{warning_msg}\n\n{expected_field['question']}"
+                try:
+                    numeric_value = int(value)
+                    if numeric_value < 2:
+                        warning_msg = (
+                            "Under the Housing Act 1988, break clause notice must be at least **2 months**.\n\n"
+                            "Please enter a number **greater than or equal to 2** for the notice period."
+                        )
+                        self.recent_messages[-1]["bot"] = f"{warning_msg}\n\n{expected_field['question']}"
+                        return f"{warning_msg}\n\n{expected_field['question']}"
 
-                # Valid value — proceed with confirmation
-                self.pending_confirmation_value = str(value)
-                self.pending_confirmation_field = expected_field["name"]
-                self.awaiting_confirmation = True
-                response = f'Saving "{value}" months for "{expected_field["name"]}". Is this correct? (yes/no)'
-                self.recent_messages[-1]["bot"] = response
-                return response
+                    # Valid value — proceed with confirmation
+                    self.pending_confirmation_value = str(value)
+                    self.pending_confirmation_field = expected_field["name"]
+                    self.awaiting_confirmation = True
+                    response = f'Saving "{value}" months for "{expected_field["name"]}". Is this correct? (yes/no)'
+                    self.recent_messages[-1]["bot"] = response
+                    return response
+
+                except ValueError:
+                    response = "That doesn’t seem like a valid number of months. Please enter a number (e.g., 2)."
+                    self.recent_messages[-1]["bot"] = response
+                    return response
 
             # had to make a tool for fields that cannot be answered with a "no"
             if expected_field["name"] in {"property_includes_confirmation"}: 
@@ -3106,7 +3120,7 @@ class ConversationState:
 
 
     def finalize_document(self) -> dict:
-        final_fields = self.slots.copy()  # Start with user-provided fields
+        final_fields = self.slots.copy() 
 
         # Add derived fields if their conditions are met
         for field in SCHEMAS[self.active_schema]["fields"]:

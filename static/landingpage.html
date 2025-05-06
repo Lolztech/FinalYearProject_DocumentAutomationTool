@@ -1,4 +1,3 @@
-<!-- templates/landing.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,10 +9,14 @@
   <div class="landing-container">
     <h1>Welcome to the Assured Sharthold Tenancy Document Assistant</h1>
     <p>This tool will guide you through generating a legally valid rental agreement for England & Wales.</p>
-    <p>Click below to get started:</p>
-    <a href="/chat_ui">
-      <button class="start-button">Start Document Creation</button>
-    </a>
+    <p>Please enter the access code to begin:</p>
+  
+    <div class="access-wrapper">
+      <input type="password" id="access-code" placeholder="Enter access code" class="password-field" />
+      <button class="start-button" onclick="validatePassword()">Start Document Creation</button>
+      <p id="password-error" style="color: red; display: none;">Invalid password. Please try again.</p>
+    </div>
   </div>
+  <script src="/static/landing.js"></script>
 </body>
 </html>

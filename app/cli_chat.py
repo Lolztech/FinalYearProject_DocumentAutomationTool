@@ -1,7 +1,7 @@
 import requests
 from colorama import init, Fore, Style
 
-# Initialize colorama for Windows compatibility
+
 init()
 
 print(Fore.YELLOW + "Legal Doc Assistant CLI" + Style.RESET_ALL)
